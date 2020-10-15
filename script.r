@@ -526,30 +526,30 @@ if(validPlot)
                                         colour = "lightgrey"), 
         panel.grid.minor = element_line(size = 0.15, linetype = 'dotted',
                                         colour = "lightgrey"))
-      fig = plotly::plot_ly(type="table",domain = list(x=c(0.75,1),
-                                                      y=c(0,1)),header=list(values=list(xaxis1,yaxis1),  align = c("center", "center"),
-                                                                            line = list(width = 1, color = 'black'),
-                                                                            fill = list(color = c("cornflowerblue", "cornflowerblue")),
-                                                                            font = list(family = "Arial", size = 15, color = "white")), 
-                            cells=list(values=list(pdata[pdata$is_forecast_table=="TRUE",]$Invoice_Date,format( round(as.numeric(pdata[pdata$is_forecast_table=="TRUE",]$Order_Value_prime)), big.mark = ',')),  align = c("center", "center"),
-                                      line = list(color = "black", width = 1),
-                                      font = list(family = "Arial", size = 15, color = c("black")), height = 28))
+       # fig = plotly::plot_ly(type="table",domain = list(x=c(0.75,1),
+       #                                                y=c(0,1)),header=list(values=list(xaxis1,yaxis1),  align = c("center", "center"),
+       #                                                                      line = list(width = 1, color = 'black'),
+       #                                                                      fill = list(color = c("cornflowerblue", "cornflowerblue")),
+       #                                                                      font = list(family = "Arial", size = 15, color = "white")), 
+       #                      cells=list(values=list(pdata[pdata$is_forecast_table=="TRUE",]$Invoice_Date,format( round(as.numeric(pdata[pdata$is_forecast_table=="TRUE",]$Order_Value_prime)), big.mark = ',')),  align = c("center", "center"),
+       #                                line = list(color = "black", width = 1),
+       #                                font = list(family = "Arial", size = 15, color = c("black")), height = 28))
       
-      r<- plotly::ggplotly(pp)
+      r<- ggplotly(pp = ggplot2::last_plot(), dynamicTicks = T) %>% layout(xaxis = list(tickvals = pdata$Invoice_Date,  type = "date", tickformat = "%B<br>%Y"))
       r <- r %>%
-      layout(
-        images = list(
-          list(source = "https://media-exp1.licdn.com/dms/image/C510BAQHrtPR7taPSyQ/company-logo_200_200/0?e=1609372800&v=beta&t=0tEgRDkeB9vsRXfsWf5c0EhiVQOvfGjrnzPo4n_CiPg",
-               xref = "paper",
-               yref = "paper",
-               x= 1.38,
+            layout(
+            images = list(
+            list(source = "https://media-exp1.licdn.com/dms/image/C510BAQHrtPR7taPSyQ/company-logo_200_200/0?e=1609372800&v=beta&t=0tEgRDkeB9vsRXfsWf5c0EhiVQOvfGjrnzPo4n_CiPg",
+               x= 1.01,
                y= 0.15,
                sizex = 0.2,
                sizey = 0.2,
                opacity = 1
           )))
-      p<-plotly::subplot(r,fig, widths = c(0.75,0.25), titleX = T, titleY = T) %>%
-        config(displaylogo = FALSE)
+      #r <- r %>% layout(xaxis = list(tickvals = pdata$Invoice_Date,  type = "date", tickformat = "%B<br>%Y"))
+      #p<-plotly::subplot(r,fig, widths = c(0.75,0.25), titleX = T, titleY = T) %>%
+          #config(displaylogo = FALSE)
+      p <- plotly::subplot(r, widths = c(0.9), heights  = c(0.8), titleX = T, titleY = T) %>% config(displaylogo = FALSE, collaborate = F)
     } }
  }
 }
