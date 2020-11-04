@@ -4,7 +4,7 @@
     "displayName": "Forecast using Prophet",
     "guid": "forecastNew535758C0179D46D1A88F273A4DA05B89",
     "visualClassName": "Visual",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Forecast the given data using the prophet library. Provide Date field as m/d/yyyy and Value field as whole number or decimal number",
     "supportUrl": "https://github.com/predmactechnologies/Support_PowerBI_CustomVisual",
     "gitHubUrl": "https://github.com/predmactechnologies/PowerBI_Custom_Visual"
