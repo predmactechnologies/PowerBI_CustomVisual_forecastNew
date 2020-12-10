@@ -104,58 +104,66 @@ validPlot = TRUE
 validData = TRUE
 validPlot2 = TRUE
 if(!exists("valuefield"))
-   {
-     validData = FALSE
-     validPlot = FALSE
-     text = "Value field is required"
-     p =ggplot() + 
-       annotate("text", x = 4, y = 25, size=4, label = text) + 
-       theme_void()
-     p =ggplotly(p) %>%
-        config(displaylogo = FALSE)
+{
+  validData = FALSE
+  validPlot = FALSE
+  text = "Value field is required"
+  p =ggplot() + 
+    annotate("text", x = 4, y = 25, size=4, label = text) + 
+    theme_void()
+  p =ggplotly(p) %>%
+    config(displaylogo = FALSE)
 }
 if(!exists("datefield"))
-   {
-     validData = FALSE
-     validPlot = FALSE
-     text = "Date field is required \n (Format m/d/yyyy)"
-     p =ggplot() + 
-       annotate("text", x = 4, y = 25, size=4, label = text) + 
-       theme_void()
-     p =ggplotly(p) %>%
-        config(displaylogo = FALSE)
+{
+  validData = FALSE
+  validPlot = FALSE
+  text = "Date field is required"
+  p =ggplot() + 
+    annotate("text", x = 4, y = 25, size=4, label = text) + 
+    theme_void()
+  p =ggplotly(p) %>%
+    config(displaylogo = FALSE)
 }
 if(validData)
 {
   validPlot = TRUE
   dataset = cbind(datefield, valuefield)
-  Invoice_Date = mdy(dataset[,1])
+  Invoice_Date = as.Date(dataset[,1])
   errorDate = mean(is.na(Invoice_Date))
-  if(errorDate>0.3)
+  if(errorDate>0.3||substring(max(Invoice_Date),0,2)=="00")
   {
     validPlot = FALSE
-     text = "Error in Date field \n Format required is m/d/yyyy"
-     p =ggplot() + 
-       annotate("text", x = 4, y = 25, size=4, label = text) + 
-       theme_void()
-     p =ggplotly(p) %>%
-        config(displaylogo = FALSE)
+    text = "Error in Date field. Date format required"
+    p =ggplot() + 
+      annotate("text", x = 4, y = 25, size=4, label = text) + 
+      theme_void()
+    p =ggplotly(p) %>% config(displaylogo = FALSE)
   }
+
   Order_Value_prime = dataset[,2]
   Order_Value = data.frame(Invoice_Date, Order_Value_prime)
   Order_Value$Order_Value_prime<-gsub("[$]","", Order_Value$Order_Value_prime)
   Order_Value$Order_Value_prime<-as.numeric(gsub(',', '', Order_Value$Order_Value_prime))
   Order_Value$Invoice_Date<-as.Date(Invoice_Date,format = "%d-%m-%Y")
   errorOrder = mean(is.na(Order_Value$Order_Value_prime))
+  if(nrow(Order_Value)<12)
+  {
+    validPlot = FALSE
+    text = "Not enough data points"
+    p =ggplot() + 
+      annotate("text", x = 4, y = 25, size=4, label = text) + 
+      theme_void()
+    p =ggplotly(p) %>% config(displaylogo = FALSE)
+  }
   if(errorOrder>0.3)
   {
     validPlot = FALSE
-     text = "Error in Value field,\n Value should be decimal or whole number"
-     p =ggplot() + 
-       annotate("text", x = 4, y = 25, size=4, label = text) + 
-       theme_void()
-     p =ggplotly(p) %>%
-        config(displaylogo = FALSE)
+    text = "Error in Value field,\n Value should be decimal or whole number"
+    p =ggplot() + 
+      annotate("text", x = 4, y = 25, size=4, label = text) + 
+      theme_void()
+    p =ggplotly(p) %>% config(displaylogo = FALSE)
   }
   
 }
@@ -163,70 +171,76 @@ if(validPlot)
 {
   Order_Value = Order_Value %>% group_by(Invoice_Date) %>% summarize("Order_Value_prime" = sum(Order_Value_prime)) %>% as.data.frame
   Order_Value<- Order_Value[order(Order_Value$Invoice_Date),]
-
+  
   list_model_formats<-conf1
   trend_model <- conf2
-
+  
   ######################
   #cleanin data 
   #######################
   pf_df_summarised_daily<-Order_Value
   # removing na
   pf_df_summarised_daily<-pf_df_summarised_daily[!is.na(pf_df_summarised_daily$Order_Value_prime),]
-
-
+  
+  
   #summary(pf_df_summarised$Order_Value_prime)
-
+  
   #remove weekend data
   pf_df_summarised_daily$wday<-wday(pf_df_summarised_daily$Invoice_Date)
   pf_df_summarised_daily<-pf_df_summarised_daily[pf_df_summarised_daily$wday!=7,]
   pf_df_summarised_daily<-pf_df_summarised_daily[pf_df_summarised_daily$wday!=1,]
-
+  
   #summary(pf_df_summarised$Order_Value_prime)
-
-
-
+  
+  
+  
   # Removing outlier 99%tile 
   threshold_outlier_u<-quantile(Order_Value$Order_Value_prime,0.99,na.rm = TRUE)
   threshold_outlier_l<-quantile(Order_Value$Order_Value_prime,0.01,na.rm = TRUE)
-
+  
   pf_df_summarised_daily<-pf_df_summarised_daily[pf_df_summarised_daily$Order_Value_prime<threshold_outlier_u,]
   pf_df_summarised_daily<-pf_df_summarised_daily[pf_df_summarised_daily$Order_Value_prime>threshold_outlier_l,]
-
+  
   #summary(pf_df_summarised$Order_Value_prime)
   ####
   #groupings 
   # 1.All - group sum all by date
   # 2.OTC - select only OTC and group sum
-
+  
   forecasted_data_master<- NULL
-
-
+  
+  
   #t="ALL"
   # we do to categories 
-
+  
   pf_df_summarised_category_m<-pf_df_summarised_daily
-
-
+  
+  
   #summary(pf_df_summarised$Order_Value_prime)
   ###########################
   # Data Cleaning  
   ###########################
-
-
+  
+  
   pf_df_summarised_category<-pf_df_summarised_category_m
   pf_df_summarised_category<-pf_df_summarised_category %>% group_by(Invoice_Date) %>% summarize(Order_Value_prime = sum(Order_Value_prime)) %>% as.data.frame
   #sort by invoice date
   pf_df_summarised_category<-pf_df_summarised_category[order(pf_df_summarised_category$Invoice_Date),]
-
+  
   ######
   #if there is missing data more than a month skip that
-  if(max(Order_Value$Invoice_Date)-max(pf_df_summarised_category$Invoice_Date)>30){
-    print(paste('skipping ' ,pl,'due to less data points. Max date in parent level',max(pf_df_summarised_category$Invoice_Date)))
-    next
-  }
-
-
+  # if(max(Order_Value$Invoice_Date)-max(pf_df_summarised_category$Invoice_Date)>30){
+  #   #print(paste('skipping ' ,pl,'due to less data points. Max date in parent level',max(pf_df_summarised_category$Invoice_Date)))
+  #   validPlot2 = FALSE
+  #   text = "Not enough data points"
+  #   p =ggplot() + 
+  #     annotate("text", x = 4, y = 25, size=4, label = text) + 
+  #     theme_void()
+  #   p =ggplotly(p) %>%
+  #     config(displaylogo = FALSE)
+  # }
+  
+  
   ###########################
   # Group and summarise data 
   ###########################
@@ -236,7 +250,7 @@ if(validPlot)
   # #bar chart
   # 3. quater data -> 1 quater
   # 4. monthly -> next 12 month
-
+  
   # list_model_formats<-c("Forecast Next 12 Months")
   #model_format<-"Forecast Next Quarter"
   for (model_format in list_model_formats) { 
@@ -366,16 +380,16 @@ if(validPlot)
         pf_df_summarised<-data_for_model
         if(trend_type=="Weighted"){
           m <- prophet(pf_df_summarised,changepoint.prior.scale = 0.3,n.changepoints =4,
-                      seasonality.prior.scale = 0.25,
-                      #seasonality.mode ='multiplicative',
-                      weekly.seasonality=FALSE,daily.seasonality=FALSE)
+                       seasonality.prior.scale = 0.25,
+                       #seasonality.mode ='multiplicative',
+                       weekly.seasonality=FALSE,daily.seasonality=FALSE)
           
           
         } else {
           m <- prophet(pf_df_summarised,n.changepoints =1,
-                      #seasonality.mode ='multiplicative',
-                      seasonality.prior.scale = 0.25,
-                      weekly.seasonality=FALSE,daily.seasonality=FALSE)
+                       #seasonality.mode ='multiplicative',
+                       seasonality.prior.scale = 0.25,
+                       weekly.seasonality=FALSE,daily.seasonality=FALSE)
         }
         
         future <- make_future_dataframe(m, periods = 12, freq = 'month')
@@ -448,110 +462,37 @@ if(validPlot)
       print(paste("-I- Finished modeling ", model_format,trend_type))
     }
   }
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
   # rm(end_month,fdata,forecast,forecast_m,forecasted_data,future,list_model_formats,m,max_date,model_format,Order_Value,
   #    pf_df_summarised,pf_df_summarised_category ,pf_df_summarised_daily,
   #    t,this_month,this_quarter,threshold_outlier_l,threshold_outlier_u,types ,padd_plot,data_for_model,pdata,pf_df_summarised_category_m  )
-
+  
   # end_time <- Sys.time()
   # end_time - start_time
-
-
+  
+  
   #########
   # fore testing 
- if(validPlot2) 
- {
-  for (model_format in list_model_formats) {
-    for( trend_type in trend_model){
-      pdata<-forecasted_data_master[forecasted_data_master$trend_type==trend_type & forecasted_data_master$model_format==model_format,]
-      #pdata$is_forecast_plot = pdata[pdata$is_forecast_plot =="TRUE",3] = "Forecast"
-      #pdata$is_forecast_plot = pdata[pdata$is_forecast_plot =="FALSE",3] = "Input"
-      pdata = transform(pdata, legend1 = ifelse(is_forecast_plot==TRUE, "Forecast", "Input"))
-      pdata = transform(pdata, legend2 = ifelse(is_forecast_table==TRUE, "Forecast", "Input"))
-      if(plot1 == "bar")
-      {
-      if(list_model_formats == "Forecast Next 12 Months"|list_model_formats =="Forecast Next Quarter")
-      {
-        pp<- ggplot() +
-          geom_bar(data = pdata[!duplicated(pdata$Invoice_Date),], 
-                  aes(x = Invoice_Date, y = Order_Value_prime , fill = legend1),
-                  stat = "identity", width = 20 )+
-          geom_line(data = pdata[!duplicated(pdata$Invoice_Date),], aes(x=Invoice_Date, y=trend, color = "trend"))+
-          labs(title=paste(model_format,trend_type)) + xlab(xaxis1) + ylab(yaxis1)+
-          scale_y_continuous(labels = scales::comma) + theme(legend.title=element_blank())+
-          scale_fill_discrete(labels = c("Input", "Forecast"))+
-          scale_colour_manual("", labels = c("trend"),
-                              breaks = c("trend"),
-                              values = c("black"))
-      }
-      else
-      {
-          pp<- ggplot() +
-          geom_bar(data = pdata[!duplicated(pdata$Invoice_Date),], 
-                  aes(x = Invoice_Date, y = Order_Value_prime , fill = legend1),
-                  stat = "identity", width = 1 )+
-          geom_line(data = pdata[!duplicated(pdata$Invoice_Date),], aes(x=Invoice_Date, y=trend, color = "trend"))+
-          labs(title=paste(model_format,trend_type)) + xlab(xaxis1) + ylab(yaxis1)+
-          scale_y_continuous(labels = scales::comma) + theme(legend.title=element_blank())+
-          scale_fill_discrete(labels = c("Input", "Forecast"))+
-          scale_colour_manual("", labels = c("trend"),
-                              breaks = c("trend"),
-                              values = c("black"))
-      }
-      }
-      else
-      {
-        pp<-ggplot(pdata, aes(x=Invoice_Date, y=Order_Value_prime,color=legend1)) +
-          geom_line()+labs(title=paste(model_format,trend_type))+
-          geom_line(aes(x=Invoice_Date, y=trend,color='trend')) + xlab(xaxis1) +
-          ylab(yaxis1)  + scale_y_continuous(labels = scales::comma) + 
-          theme(legend.title=element_blank())
-      }
-      
-      #pdata<-forecasted_data_master[forecasted_data_master$category==t & forecasted_data_master$trend_type==trend_type & forecasted_data_master$model_format==model_format,]
-      # pp<-ggplot(pdata, aes(x=Invoice_Date, y=Order_Value_prime,color=is_forecast_plot)) +geom_line()+labs(title=paste(t,model_format,trend_type))+geom_line(aes(x=Invoice_Date, y=trend,color='trend')) + xlab("Invoice Date") + ylab("Order Value in $")  + scale_y_continuous(labels = scales::comma) + theme(legend.title=element_blank())
-      pp<-pp + theme(
-        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
-        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'),
-        panel.background = element_rect(fill = "white",
-                                        colour = "white",
-                                        size = 0.5, linetype = "solid"),
-        panel.grid.major = element_line(size = 0.2, linetype = 'dotted',
-                                        colour = "lightgrey"), 
-        panel.grid.minor = element_line(size = 0.15, linetype = 'dotted',
-                                        colour = "lightgrey"))
-       # fig = plotly::plot_ly(type="table",domain = list(x=c(0.75,1),
-       #                                                y=c(0,1)),header=list(values=list(xaxis1,yaxis1),  align = c("center", "center"),
-       #                                                                      line = list(width = 1, color = 'black'),
-       #                                                                      fill = list(color = c("cornflowerblue", "cornflowerblue")),
-       #                                                                      font = list(family = "Arial", size = 15, color = "white")), 
-       #                      cells=list(values=list(pdata[pdata$is_forecast_table=="TRUE",]$Invoice_Date,format( round(as.numeric(pdata[pdata$is_forecast_table=="TRUE",]$Order_Value_prime)), big.mark = ',')),  align = c("center", "center"),
-       #                                line = list(color = "black", width = 1),
-       #                                font = list(family = "Arial", size = 15, color = c("black")), height = 28))
-      
-      r<- ggplotly(pp = ggplot2::last_plot(), dynamicTicks = T) %>% layout(xaxis = list(tickvals = pdata$Invoice_Date,  type = "date", tickformat = "%B<br>%Y"))
-      r <- r %>%
-            layout(
-            images = list(
-            list(source = "https://media-exp1.licdn.com/dms/image/C510BAQHrtPR7taPSyQ/company-logo_200_200/0?e=1609372800&v=beta&t=0tEgRDkeB9vsRXfsWf5c0EhiVQOvfGjrnzPo4n_CiPg",
-               x= 1.01,
-               y= 0.15,
-               sizex = 0.2,
-               sizey = 0.2,
-               opacity = 1
-          )))
-      #r <- r %>% layout(xaxis = list(tickvals = pdata$Invoice_Date,  type = "date", tickformat = "%B<br>%Y"))
-      #p<-plotly::subplot(r,fig, widths = c(0.75,0.25), titleX = T, titleY = T) %>%
-          #config(displaylogo = FALSE)
-      p <- plotly::subplot(r, widths = c(0.9), heights  = c(0.8), titleX = T, titleY = T) %>% config(displaylogo = FALSE, collaborate = F)
-    } }
- }
+  if(validPlot2) 
+  {
+    for (model_format in list_model_formats) {
+      for( trend_type in trend_model){
+        pdata<-forecasted_data_master[forecasted_data_master$trend_type==trend_type & forecasted_data_master$model_format==model_format,]
+        #pdata$is_forecast_plot = pdata[pdata$is_forecast_plot =="TRUE",3] = "Forecast"
+        #pdata$is_forecast_plot = pdata[pdata$is_forecast_plot =="FALSE",3] = "Input"
+        pdata = transform(pdata, legend1 = ifelse(is_forecast_plot==TRUE, "Forecast", "Input"))
+        pdata = transform(pdata, legend2 = ifelse(is_forecast_table==TRUE, "Forecast", "Input"))
+        p = plot_ly(pdata, x = pdata$Invoice_Date, y = pdata$Order_Value_prime, type = 'scatter', mode = 'lines',  color= pdata$legend1, line=list(color=c('#AA0000','#0000AA')))
+        p = p %>% add_trace(y = pdata$trend, type = 'scatter', mode = 'lines', line = list(color='#000000'), showlegend = FALSE)
+        p = p %>% layout(title = paste(conf1,conf2),xaxis = list(title = xaxis1), yaxis = list (title = yaxis1)) %>% config(displaylogo = FALSE, collaborate = F)
+      } }
+  }
 }
 
 
@@ -559,6 +500,6 @@ if(validPlot)
 ####################################################
 
 ############# Create and save widget ###############
-#p = ggplotly(g);
+p = ggplotly(p);
 internalSaveWidget(p, 'out.html');
 ####################################################

@@ -36,6 +36,5 @@
             ],            
             "url": "./node_modules/powerbi-visuals-api/schema.dependencies.json"
         }        
-    ],
-    "r.lintr.enabled": false
+    ]    
 }

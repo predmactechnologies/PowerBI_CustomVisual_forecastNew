@@ -21,19 +21,9 @@
       "url": "https://cran.r-project.org/web/packages/XML/index.html"
     },
     {
-      "name" : "lubridate",
-      "displayName": "Lubridate",
-      "url": "https://cran.r-project.org/web/packages/lubridate/index.html"
-    },
-      {
-      "name" : "prophet",
-      "displayName": "Prophet",
-      "url": "https://cran.r-project.org/web/packages/prophet/index.html"
-    },
-      {
-      "name" : "scales",
-      "displayName": "Scales",
-      "url": "https://cran.r-project.org/web/packages/scales/index.html"
+      "name": "parsedate",
+      "displayName": "parsedate",
+      "url": "https://cran.r-project.org/web/packages/parsedate/index.html"
     }
   ]
 }

@@ -1,171 +1,154 @@
 {
-  "dataRoles": [
-    {
-      "displayName": "Date",
-      "kind": "Grouping",
-      "name": "datefield"
-    },
-    {
-      "displayName": "Value",
-      "kind": "GroupingOrMeasure",
-      "name": "valuefield"
-    }
-  ],
-  "dataViewMappings": [
-    {
-      "conditions": [
+    "dataRoles": [{
+            "displayName": "Date",
+            "kind": "Grouping",
+            "name": "datefield"
+        },
         {
-          "datefield": {
-            "max": 1
-          },
-          "valuefield": {
-            "max": 1
-          }
-  
-        }
-      ],
-      "scriptResult": {
-        "dataInput": {
-          "table": {
-            "rows": {
-              "select": [
-                {
-                  "for": {
-                    "in": "datefield"
-                  }
+            "displayName": "Value",
+            "kind": "GroupingOrMeasure",
+            "name": "valuefield",
+            "requiredTypes": [{
+                    "text": false
                 },
                 {
-                  "for": {
-                    "in": "valuefield"
-                  }
+                    "numeric": true
+                },
+                {
+                    "integer": true
                 }
-              ],
-              "dataReductionAlgorithm": {
-                "top": {}
-              }
+            ],
+            "preferredTypes": [{
+                "numeric": true
+            }]
+        }
+    ],
+    "dataViewMappings": [{
+        "conditions": [{
+            "datefield": {
+                "max": 1
+            },
+            "valuefield": {
+                "max": 1
             }
-          }
-        },
-        "script": {
-          "scriptProviderDefault": "R",
-          "scriptOutputType": "html",
-          "source": {
-            "objectName": "rcv_script",
-            "propertyName": "source"
-          },
-          "provider": {
-            "objectName": "rcv_script",
-            "propertyName": "provider"
-          }
-        }
-      }
-    }
-  ],
-  "objects": {
-    "rcv_script": {
-      "properties": {
-        "provider": {
-          "type": {
-            "text": true
-          }
-        },
-        "source": {
-          "type": {
-            "scripting": {
-              "source": true
+
+        }],
+        "scriptResult": {
+            "dataInput": {
+                "table": {
+                    "rows": {
+                        "select": [{
+                                "for": {
+                                    "in": "datefield"
+                                }
+                            },
+                            {
+                                "for": {
+                                    "in": "valuefield"
+                                }
+                            }
+                        ],
+                        "dataReductionAlgorithm": {
+                            "top": {}
+                        }
+                    }
+                }
+            },
+            "script": {
+                "scriptProviderDefault": "R",
+                "scriptOutputType": "html",
+                "source": {
+                    "objectName": "rcv_script",
+                    "propertyName": "source"
+                },
+                "provider": {
+                    "objectName": "rcv_script",
+                    "propertyName": "provider"
+                }
             }
-          }
         }
-      }
-    },
-  "settings_forecast_params": {
-      "displayName": " Forecast Settings",
-      "description": "Forecast plot settings",
-      "properties": {
-         "conf1": {
-          "displayName": "Forecast Model",
-          "description": "Select Montly or Daily Forecast",
-          "type": {
-            "enumeration": [
-              {
-                "displayName": "Forecast Next 30 Days",
-                "value": "Forecast Next 30 Days"
-              },
-              {
-                "displayName": "Forecast till End of the Month",
-                "value": "Forecast till End of the Month"
-              },
-              {
-                "displayName": "Forecast Next 12 Months",
-                "value": "Forecast Next 12 Months"
-              },
-              {
-                "displayName": "Forecast Next Quarter",
-                "value": "Forecast Next Quarter"
-              }
-            ]
-          }
+    }],
+    "objects": {
+        "rcv_script": {
+            "properties": {
+                "provider": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "source": {
+                    "type": {
+                        "scripting": {
+                            "source": true
+                        }
+                    }
+                }
+            }
         },
-           "conf2": {
-          "displayName": "Trend Type",
-          "description": "Select Linear or Weighted",
-          "type": {
-            "enumeration": [
-              {
-                "displayName": "Linear",
-                "value": "Linear"
-              },
-              {
-                "displayName": "Multi Change point",
-                "value": "Weighted"
-              }
-            ]
-          }
-        }
-      }
-    },
-  "settings_plot_params": {
-      "displayName": "Plot Selection",
-      "description": "Plot Selection",
-      "properties": {
-        "plot1": {
-          "displayName": "Select a Chart Type",
-          "description": "To select  different chart type",
-          "type": {
-            "enumeration": [
-              {
-                "displayName": "Bar chart",
-                "value": "bar"
-              },
-              {
-                "displayName": "Line chart",
-                "value": "line"
-              }
-            ]
-          }
-        }
-      }
-    },
-      "settings_axis_params": {
-      "displayName": "Axis Settings",
-      "description": "Axis Settings",
-      "properties": {
-        "xaxis1": {
-          "displayName": "X axis title",
-          "description": "To change the X axis title",
-          "type": {
-            "text": true
-          }
+        "settings_forecast_params": {
+            "displayName": " Forecast Settings",
+            "description": "Forecast plot settings",
+            "properties": {
+                "conf1": {
+                    "displayName": "Forecast Model",
+                    "description": "Select Montly or Daily Forecast",
+                    "type": {
+                        "enumeration": [{
+                                "displayName": "Forecast Next 30 Days",
+                                "value": "Forecast Next 30 Days"
+                            },
+                            {
+                                "displayName": "Forecast till End of the Month",
+                                "value": "Forecast till End of the Month"
+                            },
+                            {
+                                "displayName": "Forecast Next 12 Months",
+                                "value": "Forecast Next 12 Months"
+                            },
+                            {
+                                "displayName": "Forecast Next Quarter",
+                                "value": "Forecast Next Quarter"
+                            }
+                        ]
+                    }
+                },
+                "conf2": {
+                    "displayName": "Trend Type",
+                    "description": "Select Linear or Weighted",
+                    "type": {
+                        "enumeration": [{
+                                "displayName": "Linear",
+                                "value": "Linear"
+                            },
+                            {
+                                "displayName": "Multi Change point",
+                                "value": "Weighted"
+                            }
+                        ]
+                    }
+                }
+            }
         },
-         "yaxis1": {
-          "displayName": "Y axis title",
-          "description": "To change the Y axis title",
-          "type": {
-            "text": true
-          }
-        } 
-      }
-    }
-  },
-  "suppressDefaultTitle": true
+        "settings_axis_params": {
+            "displayName": "Axis Settings",
+            "description": "Axis Settings",
+            "properties": {
+                "xaxis1": {
+                    "displayName": "X axis title",
+                    "description": "To change the X axis title",
+                    "type": {
+                        "text": true
+                    }
+                },
+                "yaxis1": {
+                    "displayName": "Y axis title",
+                    "description": "To change the Y axis title",
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
+        }
+    },
+    "suppressDefaultTitle": true
 }

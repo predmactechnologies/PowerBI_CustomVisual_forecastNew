@@ -24,7 +24,8 @@
 *  THE SOFTWARE.
 */
 "use strict";
-import powerbi from "powerbi-visuals-api";
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
@@ -33,6 +34,7 @@ import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+
 import { VisualSettings } from "./settings";
 import { parseElement, resetInjector, runHTMLWidgetRenderer } from "./htmlInjectionUtility";
 
@@ -72,39 +74,8 @@ const renderVisualUpdateType: number[] = [
     VisualUpdateType.ResizeEnd,
     VisualUpdateType.Resize + VisualUpdateType.ResizeEnd
 ];
-export interface IVisualHost extends powerbi.extensibility.IVisualHost {
-    eventService: IVisualEventService ;
-}
-/**
- * An interface for reporting rendering events
- */
-export interface IVisualEventService {
-    /**
-     * Should be called just before the actual rendering starts, 
-     * usually at the start of the update method
-     *
-     * @param options - the visual update options received as an update parameter
-     */
-    renderingStarted(options: VisualUpdateOptions): void;
-
-    /**
-     * Should be called immediately after rendering finishes successfully
-     * 
-     * @param options - the visual update options received as an update parameter
-     */
-    renderingFinished(options: VisualUpdateOptions): void;
-
-    /**
-     * Called when rendering fails, with an optional reason string
-     * 
-     * @param options - the visual update options received as an update parameter
-     * @param reason - the optional failure reason string
-     */
-    renderingFailed(options: VisualUpdateOptions, reason?: string): void;
-}
 
 export class Visual implements IVisual {
-    private events: IVisualEventService;
     private rootElement: HTMLElement;
     private headNodes: Node[];
     private bodyNodes: Node[];
@@ -119,7 +90,7 @@ export class Visual implements IVisual {
     }
 
     public update(options: VisualUpdateOptions): void {
-        this.events.renderingStarted(options);
+
         if (!options ||
             !options.type ||
             !options.viewport ||
@@ -143,7 +114,6 @@ export class Visual implements IVisual {
         } else {
             this.onResizing(options.viewport);
         }
-        this.events.renderingFinished(options);
     }
 
     public onResizing(finalViewport: IViewport): void {
@@ -212,6 +182,4 @@ export class Visual implements IVisual {
         VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
         return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
     }
-
-    
 }
