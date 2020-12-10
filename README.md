@@ -3,15 +3,12 @@ Prophet is a forecasting procedure implemented in R and Python created by Facebo
 
 For more details about the prophet model [click here](https://facebook.github.io/prophet/docs/quick_start.html#r-api).
 
-To download the visual without the logo, [click here](https://predmac.com/power-bi-custom-visual/).
-
 In this visual, we have included four different types of forecast.
 
 1. Forecast next 30 days using the past 90 days
 2. Forecast till the end of the current month
 3. Forecast next 4 quarters
 4. Forecast next 12 months
-Users can choose either a bar plot or line chart with linear or multi-change point trend line.
 #### Using the plot
 The input fields required for the plot are,
 
@@ -33,3 +30,4 @@ To submit an issue, please follow these directions:
 3. IMPORTANT: Include a sample report (PBIX file) that reproduces the issue. If your report contains private data or you cannot publicy share it for any reason, please send it to support_customvisual@predmac.com with a reference to the issue on this repository.
 
 [Create New issue](https://github.com/predmactechnologies/PowerBI_CustomVisual/issues)
+For more information visit our page [click here](https://predmac.com/power-bi-custom-visual/).
