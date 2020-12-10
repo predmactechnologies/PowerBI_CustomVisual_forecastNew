@@ -15,13 +15,12 @@ Users can choose either a bar plot or line chart with linear or multi-change poi
 #### Using the plot
 The input fields required for the plot are,
 
-- Date field(required format is m/d/yyyy)
+- Date field required
 - Value field(whole number or decimal number)
 #### Customization available
 
 1. Forecast Settings – Used to select the forecast model and trend type
-2. Plot selection – Used to select the type of the plot. Available options are Bar and line chart
-3. Axis Setting – To change the name of the axis of the plot.
+2 Axis Setting – To change the name of the axis of the plot.
 For additional customization of the forecast, contact us via the email support_customvisual@predmac.com
 ## Sumbit an issue
 
